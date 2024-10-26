@@ -60,7 +60,7 @@ function Footer() {
             <Link href="https://linkedin.com/in/bhavesh-arora-11b0a319b" target="_blank">
               <LinkedIn />
             </Link>
-             <Link href="https://www.instagram.com/bhavesharora02/" target="_blank">
+            <Link href="https://www.instagram.com/bhavesharora02/" target="_blank">
               <Facebook />
             </Link>          </Box>
         </Grid>
@@ -77,6 +77,28 @@ function Footer() {
             {/* <Link href="https://facebook.com/jaikushwah" target="_blank">
               <Facebook />
             </Link> */}
+          </Box>
+        </Grid>
+        <Grid item>
+          <Typography variant="body2">JATIN SHRIVAS </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+            <Link href="https://github.com/" target="_blank">
+              <GitHub />
+            </Link>
+            <Link href="https://linkedin.com/in/" target="_blank">
+              <LinkedIn />
+            </Link>
+          </Box>
+        </Grid>
+        <Grid item>
+          <Typography variant="body2">PARAS PANDA</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+            <Link href="https://github.com/99Pp" target="_blank">
+              <GitHub />
+            </Link>
+            <Link href="https://linkedin.com/in/" target="_blank">
+              <LinkedIn />
+            </Link>
           </Box>
         </Grid>
       </Grid>
