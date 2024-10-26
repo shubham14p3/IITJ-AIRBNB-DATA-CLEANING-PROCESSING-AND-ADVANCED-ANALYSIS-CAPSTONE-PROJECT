@@ -54,6 +54,16 @@ IITJ AIRBNB DATA CLEANING, PROCESSING AND ADVANCED ANALYSIS
 - Github: [@JaiSinghKushwah](https://github.com/jai12kushwah)
 - Linkedin: [Jai Singh Kushwah](https://linkedin.com/in/jsk21)
 
+👤 **PARAS PANDA**
+
+- Github: [@PARASPANDA](https://github.com/)
+- Linkedin: [PARAS PANDA](https://linkedin.com/in/)
+
+👤 **JATIN SHRIVAS **
+
+- Github: [@JATINSHRIVAS](https://github.com/)
+- Linkedin: [JATIN SHRIVAS ](https://linkedin.com/in/)
+
 ## Future Upgrades
 
 - Make the special move for Goku- Kamahamehaa.
