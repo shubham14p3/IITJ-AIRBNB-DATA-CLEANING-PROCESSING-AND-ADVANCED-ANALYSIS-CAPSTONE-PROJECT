@@ -6,7 +6,11 @@ IITJ AIRBNB DATA CLEANING, PROCESSING AND ADVANCED ANALYSIS
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 
-## Built With
+
+
+## Welcome Screen
+
+![screenshot1](./src/assets/Data.JPG)
 
 ### Developing tools
 
