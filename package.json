@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "start": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "back": "node backend/index.js",
     "preview": "vite preview"
   },
   "dependencies": {
