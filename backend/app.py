@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import boto3
 import pandas as pd
-import mysql.connector
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -10,17 +10,15 @@ app = Flask(__name__)
 # Enable CORS
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# AWS S3 Configuration
-BUCKET_NAME = "iitj-data-ingestion-bucket"
-s3 = boto3.client("s3")
+# Configuration
+BUCKET_NAME = "iitj-data-ingestion-bucket"  # S3 bucket name
+CSV_FOLDER = os.path.join(os.getcwd(), "csv")  # Local CSV folder path
 
-# RDS MySQL Database Configuration
-db_config = {
-    'host': 'iitj.cdwiqug4cpvx.us-east-1.rds.amazonaws.com',
-    'user': 'g23ai2028',      # Replace with your RDS username
-    'password': 'g23ai2028',  # Replace with your RDS password
-    'database': 'iitj'
-}
+# Make it false when using awssa
+LOCAL_USE = True  # Flag to toggle between local and S3 data sources
+
+# AWS S3 Client
+s3 = boto3.client("s3")
 
 # Function to load a CSV file from S3
 def load_csv_from_s3(file_name, nrows=None):
@@ -32,52 +30,56 @@ def load_csv_from_s3(file_name, nrows=None):
             df = pd.read_csv(obj["Body"], low_memory=False)
         return df
     except Exception as e:
-        print(f"Error loading {file_name}: {e}")
+        print(f"Error loading {file_name} from S3: {e}")
         return None
 
-# Function to query the database
-def query_db(query):
+# Function to load a CSV file from local storage
+def load_csv_from_local(file_name, nrows=None):
     try:
-        connection = mysql.connector.connect(**db_config)
-        cursor = connection.cursor(dictionary=True)
-        cursor.execute(query)
-        results = cursor.fetchall()
-        cursor.close()
-        connection.close()
-        return results
+        file_path = os.path.join(CSV_FOLDER, file_name)
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"File {file_name} not found in {CSV_FOLDER}")
+        
+        if nrows:
+            df = pd.read_csv(file_path, nrows=nrows, low_memory=False)
+        else:
+            df = pd.read_csv(file_path, low_memory=False)
+        return df
     except Exception as e:
-        print(f"Database query error: {e}")
-        return []
+        print(f"Error loading {file_name} from local storage: {e}")
+        return None
 
-# Preload data from S3
-calendar_data = load_csv_from_s3("calendar.csv", nrows=50).to_dict(orient="records")
-listings_data = load_csv_from_s3("listings.csv", nrows=50).to_dict(orient="records")
-reviews_data = load_csv_from_s3("reviews.csv", nrows=50).to_dict(orient="records")
+# Dynamic data loading based on `localuse` flag
+def load_csv(file_name, nrows=None):
+    if LOCAL_USE:
+        print(f"Loading {file_name} from local storage...")
+        return load_csv_from_local(file_name, nrows)
+    else:
+        print(f"Loading {file_name} from S3...")
+        return load_csv_from_s3(file_name, nrows)
+
+# Preload data
+calendar_data = load_csv("calendar.csv", nrows=50).to_dict(orient="records")
+listings_data = load_csv("listings.csv", nrows=50).to_dict(orient="records")
+reviews_data = load_csv("reviews.csv", nrows=50).to_dict(orient="records")
 
 # Flask Routes
 @app.route('/api/data', methods=['GET'])
 def get_data():
-    """Endpoint to return a sample of data from S3 bucket."""
+    """Endpoint to return a sample of data."""
     return jsonify({
         'calendar': calendar_data,
         'listings': listings_data,
         'reviews': reviews_data
     })
 
-@app.route('/api/db-query', methods=['GET'])
-def get_db_data():
-    """Endpoint to return data from the MySQL database."""
-    query = request.args.get('query', 'SELECT * FROM your_table LIMIT 10')  # Replace 'your_table'
-    data = query_db(query)
-    return jsonify(data)
-
 @app.route("/api/merged_data", methods=["GET"])
 def get_merged_data():
-    """Endpoint to return merged data from S3."""
+    """Endpoint to return merged data."""
     file_name = "micro_merged.csv"
     try:
         nrows = int(request.args.get("nrows", 1000))  # Default to 1000 rows
-        df = load_csv_from_s3(file_name, nrows=nrows)
+        df = load_csv(file_name, nrows=nrows)
         if df is not None:
             return jsonify(df.to_dict(orient="records")), 200
         else:

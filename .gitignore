@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 *.venv
+backend/venv
+backend/csv
 
 # Editor directories and files
 .vscode/*
