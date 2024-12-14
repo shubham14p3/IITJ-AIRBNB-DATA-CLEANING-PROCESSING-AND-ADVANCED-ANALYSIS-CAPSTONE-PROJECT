@@ -14,71 +14,65 @@ import {
   FormControl,
   InputLabel,
   Card,
+  Button,
 } from "@mui/material";
 import { BASE_URL } from "./Constant";
 import Layout from "../layout/Layout";
-function DataAnalysis() {
-  const [data, setData] = useState([]); // Holds the dataset
-  const [currentPage, setCurrentPage] = useState(1); // Current page
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Items per page
-  const [loading, setLoading] = useState(true); // Loading state
+import { useNavigate } from "react-router-dom";
 
-  // Fetch data on component mount
+function MergedData() {
+  const [data, setData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true); // Set loading state to true
-        const response = await fetch(`${BASE_URL}/api/merged_data`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+    // Check if data exists in localStorage
+    const storedData = localStorage.getItem("mergedData");
+    if (storedData) {
+      setData(JSON.parse(storedData)); // Load data from localStorage
+      setLoading(false);
+    } else {
+      // Fetch data if not in localStorage
+      const fetchData = async () => {
+        try {
+          setLoading(true);
+          const response = await fetch(`${BASE_URL}/api/merged_data`);
+          if (!response.ok) throw new Error("Failed to fetch data");
+          const result = await response.json();
+          setData(result);
+          localStorage.setItem("mergedData", JSON.stringify(result)); // Save data to localStorage
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setLoading(false);
         }
-        const result = await response.json();
-        setData(result); // Set the fetched data
-        setLoading(false); // Set loading state to false
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false); // Set loading state to false
-      }
-    };
-
-    fetchData();
+      };
+      fetchData();
+    }
   }, []);
 
-  // Handle page change
-  const handlePageChange = (event, newPage) => {
-    setCurrentPage(newPage);
-  };
+  const handlePageChange = (event, newPage) => setCurrentPage(newPage);
 
-  // Handle items per page change
   const handleItemsPerPageChange = (event) => {
     setItemsPerPage(event.target.value);
-    setCurrentPage(1); // Reset to the first page when items per page change
+    setCurrentPage(1);
   };
 
-  // Get paginated data
   const getCurrentData = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return data.slice(startIndex, endIndex);
+    return data.slice(startIndex, startIndex + itemsPerPage);
   };
 
-  // Dynamically render table headers
   const renderTableHeaders = () => {
     if (!data.length) return null;
-
-    const headers = Object.keys(data[0]); // Get headers from the first record
     return (
       <TableRow>
-        {headers.map((header, index) => (
+        {Object.keys(data[0]).map((header, index) => (
           <TableCell
             key={index}
-            sx={{
-              fontWeight: "bold",
-              backgroundColor: "#fff",
-              position: "sticky",
-              top: 0,
-              zIndex: 1,
-            }}
+            sx={{ fontWeight: "bold", backgroundColor: "#fff", position: "sticky", top: 0, zIndex: 1 }}
           >
             {header}
           </TableCell>
@@ -87,7 +81,6 @@ function DataAnalysis() {
     );
   };
 
-  // Dynamically render table rows
   const renderTableRows = () => {
     const currentData = getCurrentData();
     return currentData.map((item, rowIndex) => (
@@ -95,61 +88,32 @@ function DataAnalysis() {
         {Object.values(item).map((value, colIndex) => (
           <TableCell
             key={colIndex}
-            sx={{
-              wordBreak: "break-word",
-              whiteSpace: "normal",
-            }}
+            sx={{ wordBreak: "break-word", whiteSpace: "normal" }}
           >
             {value === null || value === undefined
-              ? "-" // Handle null or undefined explicitly
+              ? "-"
               : typeof value === "boolean"
-                ? value
-                  ? "Yes"
-                  : "No" // Handle boolean values
-                : value} {/* Display everything else as it is */}
+                ? value ? "Yes" : "No"
+                : value}
           </TableCell>
         ))}
       </TableRow>
     ));
   };
 
-  // Calculate total pages for pagination
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
-  return (<Layout>
-    <Box
-      sx={{
-        background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
-        // minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      <Container maxWidth="lg" sx={{ paddingTop: 5, paddingBottom: 5 }}>
-        <Typography
-          variant="h6"
-          gutterBottom
-          align="center"
-          sx={{ fontWeight: "bold", color: "#333" }}
-        >
-          Statement 3: Data Integration and Consolidation
+  return (
+    <Layout>
+      <Container maxWidth="lg" sx={{ paddingY: 4 }}>
+        <Typography variant="h6" align="center" sx={{ fontWeight: "bold", color: "#333", marginBottom: 3 }}>
+          Data Analysis: Enhanced Insights
         </Typography>
 
-        <Card
-          sx={{
-            backgroundColor: "#fff",
-            boxShadow: 4,
-            borderRadius: 4,
-            padding: 3,
-          }}
-        >
-          {/* Rows per Page Select */}
-          <Box mb={3} display="flex" justifyContent="flex-end">
+        <Card sx={{ backgroundColor: "#fff", boxShadow: 4, borderRadius: 4, padding: 3 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom={2}>
             <FormControl variant="outlined" size="small">
-              <InputLabel id="rows-per-page-select-label">
-                Rows per page
-              </InputLabel>
+              <InputLabel id="rows-per-page-select-label">Rows per page</InputLabel>
               <Select
                 labelId="rows-per-page-select-label"
                 value={itemsPerPage}
@@ -163,14 +127,7 @@ function DataAnalysis() {
             </FormControl>
           </Box>
 
-          {/* Display Table */}
-          <Box
-            sx={{
-              maxHeight: "400px", // Set a fixed height for the table container
-              overflowY: "scroll", // Enable vertical scrolling
-              overflowX: "auto", // Enable horizontal scrolling (if needed)
-            }}
-          >
+          <Box sx={{ maxHeight: "400px", overflowY: "auto", overflowX: "auto" }}>
             {loading ? (
               <Typography align="center">Loading data...</Typography>
             ) : data.length ? (
@@ -183,8 +140,7 @@ function DataAnalysis() {
             )}
           </Box>
 
-          {/* Pagination */}
-          <Box mt={4} display="flex" justifyContent="center">
+          <Box marginTop={2} display="flex" justifyContent="center">
             <Pagination
               count={totalPages}
               page={currentPage}
@@ -193,11 +149,21 @@ function DataAnalysis() {
               size="large"
             />
           </Box>
+
+
         </Card>
+        <Box marginTop={4} display="flex" justifyContent="space-between">
+          <Button variant="contained" color="primary" onClick={() => navigate("/data-analysis")}>
+            Back
+          </Button>
+          <Button variant="contained" color="secondary" onClick={() => navigate("/final-insights")}>
+            Next
+          </Button>
+        </Box>
       </Container>
-    </Box>
-   </Layout> 
+
+    </Layout>
   );
 }
 
-export default DataAnalysis;
+export default MergedData;

@@ -19,78 +19,76 @@ import {
   Button,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import Footer from "../ui/Footer";
-import { BASE_URL } from "./Constant";
 import Layout from "../layout/Layout";
+import { BASE_URL } from "./Constant";
 
 function DataAnalysis() {
-  const [data, setData] = useState(null); // Holds the entire dataset
-  const [activeTab, setActiveTab] = useState(""); // Active tab state (dynamic tabs)
-  const [currentPage, setCurrentPage] = useState(1); // Current page
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Items per page
-  const [loading, setLoading] = useState(true); // Loading state
-  const [tabs, setTabs] = useState([]); // Holds the list of table names (keys from API)
-  const navigate = useNavigate(); // React Router's navigation hook
+  const [data, setData] = useState(null);
+  const [activeTab, setActiveTab] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [loading, setLoading] = useState(true);
+  const [tabs, setTabs] = useState([]);
+  const navigate = useNavigate();
 
-  // Fetch data on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true); // Set loading state to true
-        const response = await fetch(`${BASE_URL}/api/data`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+    // Check if data exists in localStorage
+    const storedData = localStorage.getItem("dataAnalysis");
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      setData(parsedData);
+      const keys = Object.keys(parsedData);
+      setTabs(keys);
+      setActiveTab(keys[0]);
+      setLoading(false);
+    } else {
+      // Fetch data from API if not in localStorage
+      const fetchData = async () => {
+        try {
+          setLoading(true);
+          const response = await fetch(`${BASE_URL}/api/data`);
+          if (!response.ok) throw new Error("Network response was not ok");
+          const result = await response.json();
+          setData(result);
+          localStorage.setItem("dataAnalysis", JSON.stringify(result)); // Save data to localStorage
+          const keys = Object.keys(result);
+          setTabs(keys);
+          setActiveTab(keys[0]);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setLoading(false);
         }
-        const result = await response.json();
-        setData(result);
-
-        // Dynamically set tabs based on response keys
-        const keys = Object.keys(result);
-        setTabs(keys);
-        setActiveTab(keys[0]); // Default to the first tab
-        setLoading(false); // Set loading state to false
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false); // Set loading state to false
-      }
-    };
-
-    fetchData();
+      };
+      fetchData();
+    }
   }, []);
 
-  // Handle tab change
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
-    setCurrentPage(1); // Reset to the first page when the tab changes
+    setCurrentPage(1);
   };
 
-  // Handle page change
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage);
   };
 
-  // Handle items per page change
   const handleItemsPerPageChange = (event) => {
     setItemsPerPage(event.target.value);
-    setCurrentPage(1); // Reset to the first page when items per page change
+    setCurrentPage(1);
   };
 
-  // Get paginated data for the active tab
   const getCurrentData = () => {
-    if (!data || !data[activeTab]) return []; // Handle case where data is undefined
+    if (!data || !data[activeTab]) return [];
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return data[activeTab].slice(startIndex, endIndex); // Return only the current page data
+    return data[activeTab].slice(startIndex, startIndex + itemsPerPage);
   };
 
-  // Dynamically render table headers based on the active tab's data
   const renderTableHeaders = () => {
     if (!data || !data[activeTab] || data[activeTab].length === 0) return null;
-
-    const headers = Object.keys(data[activeTab][0]); // Get headers from the first record
     return (
       <TableRow>
-        {headers.map((header, index) => (
+        {Object.keys(data[activeTab][0]).map((header, index) => (
           <TableCell key={index} sx={{ fontWeight: "bold" }}>
             {header}
           </TableCell>
@@ -99,149 +97,136 @@ function DataAnalysis() {
     );
   };
 
-  // Dynamically render table rows based on the active tab's data
-  const renderTableRows = (currentData) => {
-    if (!currentData) return null;
-
+  const renderTableRows = () => {
+    const currentData = getCurrentData();
     return currentData.map((item, rowIndex) => (
       <TableRow key={rowIndex}>
         {Object.values(item).map((value, colIndex) => (
-          <TableCell
-            key={colIndex}
-            sx={{
-              wordBreak: "break-word",
-              whiteSpace: "normal",
-            }}
-          >
+          <TableCell key={colIndex} sx={{ wordBreak: "break-word", whiteSpace: "normal" }}>
             {value === null || value === undefined
-              ? "-" // Handle null or undefined explicitly
+              ? "-"
               : typeof value === "boolean"
                 ? value
                   ? "Yes"
-                  : "No" // Handle boolean values
-                : value}{" "}
-            {/* Display everything else as it is */}
+                  : "No"
+                : value}
           </TableCell>
         ))}
       </TableRow>
     ));
   };
 
-  // Calculate total pages for pagination
   const totalPages = data ? Math.ceil(data[activeTab]?.length / itemsPerPage) : 1;
 
-  return (<Layout>
-    <Box
-      sx={{
-        background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      <Container maxWidth="lg" sx={{ paddingTop: 5, paddingBottom: 5 }}>
-        <Typography
-          variant="h4"
-          gutterBottom
-          align="center"
-          sx={{ fontWeight: "bold", color: "#333" }}
-        >
-          IITJ - Airbnb Data Cleaning, Processing and Advanced Analysis
-        </Typography>
-
-        {/* Dynamic Tabs */}
-        {tabs.length > 0 && (
-          <Box sx={{ borderBottom: 1, borderColor: "divider", marginBottom: 3 }}>
-            <Tabs
-              value={activeTab}
-              onChange={handleTabChange}
-              aria-label="data tabs"
-              centered
-              textColor="primary"
-              indicatorColor="primary"
-            >
-              {tabs.map((tab) => (
-                <Tab key={tab} label={tab} value={tab} />
-              ))}
-            </Tabs>
-          </Box>
-        )}
-
-        <Card
+  return (
+    <Layout>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          flexGrow: 1,
+          width: "100%",
+        }}
+      >
+        <Container
           sx={{
-            backgroundColor: "#fff",
-            boxShadow: 4,
-            borderRadius: 4,
-            padding: 3,
+            width: "100%",
+            height: "100%",
+            paddingY: 4,
           }}
         >
-          {/* Rows per Page Select */}
-          <Box mb={3} display="flex" justifyContent="flex-end">
-            <FormControl variant="outlined" size="small">
-              <InputLabel id="rows-per-page-select-label">
-                Rows per page
-              </InputLabel>
-              <Select
-                labelId="rows-per-page-select-label"
-                value={itemsPerPage}
-                onChange={handleItemsPerPageChange}
-                label="Rows per page"
+          {tabs.length > 0 && (
+            <Box sx={{ borderBottom: 1, borderColor: "divider", marginBottom: 3 }}>
+              <Tabs
+                value={activeTab}
+                onChange={handleTabChange}
+                aria-label="data tabs"
+                centered
+                textColor="primary"
+                indicatorColor="primary"
               >
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={20}>20</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
+                {tabs.map((tab) => (
+                  <Tab key={tab} label={tab} value={tab} />
+                ))}
+              </Tabs>
+            </Box>
+          )}
 
-          {/* Display Table */}
-          <Box
+          <Card
             sx={{
-              maxHeight: "400px", // Set a fixed height for the table container
-              overflowY: "scroll", // Enable vertical scrolling
-              overflowX: "auto", // Enable horizontal scrolling (if needed)
+              backgroundColor: "#fff",
+              boxShadow: 4,
+              borderRadius: 4,
+              padding: 3,
+              marginBottom: 3,
             }}
           >
-            {loading ? (
-              <Typography align="center">Loading data...</Typography>
-            ) : data && data[activeTab] ? (
-              <Table>
-                <TableHead>{renderTableHeaders()}</TableHead>
-                <TableBody>{renderTableRows(getCurrentData())}</TableBody>
-              </Table>
-            ) : (
-              <Typography align="center">No data available.</Typography>
-            )}
-          </Box>
+            <Box mb={3} display="flex" justifyContent="space-between" alignItems="center">
+              <FormControl variant="outlined" size="small">
+                <InputLabel id="rows-per-page-select-label">Rows per page</InputLabel>
+                <Select
+                  labelId="rows-per-page-select-label"
+                  value={itemsPerPage}
+                  onChange={handleItemsPerPageChange}
+                  label="Rows per page"
+                >
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={20}>20</MenuItem>
+                </Select>
+              </FormControl>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate("/merged-data")}
+              >
+                Show Merged Data
+              </Button>
+            </Box>
 
-          {/* Pagination */}
-          <Box mt={4} display="flex" justifyContent="center">
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-              size="large"
-            />
-          </Box>
-        </Card>
-      </Container>
+            <Box
+              sx={{
+                maxHeight: "400px",
+                overflowY: "scroll",
+                overflowX: "auto",
+              }}
+            >
+              {loading ? (
+                <Typography align="center">Loading data...</Typography>
+              ) : data && data[activeTab] ? (
+                <Table>
+                  <TableHead>{renderTableHeaders()}</TableHead>
+                  <TableBody>{renderTableRows()}</TableBody>
+                </Table>
+              ) : (
+                <Typography align="center">No data available.</Typography>
+              )}
+            </Box>
 
-      {/* Show Merged Data Button */}
-      {data && (
-        <Box textAlign="center" marginBottom={3}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate("/merged-data")}
-          >
-            Show Merged Data
+            <Box mt={2} display="flex" justifyContent="center">
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                size="large"
+              />
+            </Box>
+          </Card>
+        </Container>
+        <Box marginTop={4} display="flex" justifyContent="space-between">
+          <Button variant="contained" color="primary" onClick={() => navigate("/")}>
+            Back
+          </Button>
+          <Button variant="contained" color="secondary" onClick={() => navigate("/merged-data")}>
+            Next
           </Button>
         </Box>
-      )}
+        <br />
+      </Box>
 
-    </Box></Layout>
+    </Layout>
   );
 }
 
