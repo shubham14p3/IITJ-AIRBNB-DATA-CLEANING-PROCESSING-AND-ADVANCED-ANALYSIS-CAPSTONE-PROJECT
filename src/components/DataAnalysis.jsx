@@ -21,6 +21,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import { BASE_URL } from "./Constant";
+import ClipLoader from "react-spinners/ClipLoader";
 
 function DataAnalysis() {
   const [data, setData] = useState(null);
@@ -89,13 +90,33 @@ function DataAnalysis() {
     return (
       <TableRow>
         {Object.keys(data[activeTab][0]).map((header, index) => (
-          <TableCell key={index} sx={{ fontWeight: "bold" }}>
+          <TableCell
+            key={index}
+            sx={{
+              fontWeight: "bold",
+              background: "linear-gradient(90deg, #ff5722, #ff9800)", // Gradient background
+              color: "#fff", // White text for contrast
+              position: "sticky",
+              top: 0,
+              zIndex: 2, // Ensure it remains above scrolling rows
+              padding: "12px 16px", // Spacing for better readability
+              textAlign: "center", // Center-align header text
+              borderBottom: "2px solid #f0f0f0", // Add a subtle bottom border
+              textTransform: "uppercase", // Uppercase for uniform appearance
+              letterSpacing: "0.5px", // Slight spacing between letters
+              "&:hover": {
+                background: "linear-gradient(90deg, #ff9800, #ff5722)", // Reverse gradient on hover
+                boxShadow: "0 2px 5px rgba(0,0,0,0.2)", // Add shadow on hover
+              },
+            }}
+          >
             {header}
           </TableCell>
         ))}
       </TableRow>
     );
   };
+  
 
   const renderTableRows = () => {
     const currentData = getCurrentData();
@@ -128,7 +149,9 @@ function DataAnalysis() {
           flexGrow: 1,
           width: "100%",
         }}
-      >
+      ><Typography variant="h6" align="center" sx={{ fontWeight: "bold", color: "#333", marginBottom: 3 }}>
+          Clean Data after EDA
+        </Typography>
         <Container
           sx={{
             width: "100%",
@@ -190,10 +213,14 @@ function DataAnalysis() {
                 maxHeight: "400px",
                 overflowY: "scroll",
                 overflowX: "auto",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "200px", // Ensure the loader is vertically centered
               }}
             >
               {loading ? (
-                <Typography align="center">Loading data...</Typography>
+                <ClipLoader color="#4A90E2" size={50} />
               ) : data && data[activeTab] ? (
                 <Table>
                   <TableHead>{renderTableHeaders()}</TableHead>
@@ -203,7 +230,6 @@ function DataAnalysis() {
                 <Typography align="center">No data available.</Typography>
               )}
             </Box>
-
             <Box mt={2} display="flex" justifyContent="center">
               <Pagination
                 count={totalPages}

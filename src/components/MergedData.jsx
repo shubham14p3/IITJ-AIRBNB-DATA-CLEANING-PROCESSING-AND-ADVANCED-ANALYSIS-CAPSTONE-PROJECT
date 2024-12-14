@@ -19,6 +19,7 @@ import {
 import { BASE_URL } from "./Constant";
 import Layout from "../layout/Layout";
 import { useNavigate } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader";
 
 function MergedData() {
   const [data, setData] = useState([]);
@@ -72,7 +73,21 @@ function MergedData() {
         {Object.keys(data[0]).map((header, index) => (
           <TableCell
             key={index}
-            sx={{ fontWeight: "bold", backgroundColor: "#fff", position: "sticky", top: 0, zIndex: 1 }}
+            sx={{
+              fontWeight: "bold",
+              background: "linear-gradient(45deg, #2196f3, #21cbf3)", // Gradient background
+              color: "#fff", // White text for contrast
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+              padding: "10px 15px", // Add spacing for better readability
+              textAlign: "center", // Center align the header text
+              borderBottom: "2px solid #ddd", // Add a subtle border at the bottom
+              textTransform: "capitalize", // Capitalize header text
+              "&:hover": {
+                background: "linear-gradient(45deg, #21cbf3, #2196f3)", // Reverse gradient on hover
+              },
+            }}
           >
             {header}
           </TableCell>
@@ -80,6 +95,7 @@ function MergedData() {
       </TableRow>
     );
   };
+  
 
   const renderTableRows = () => {
     const currentData = getCurrentData();
@@ -88,12 +104,18 @@ function MergedData() {
         {Object.values(item).map((value, colIndex) => (
           <TableCell
             key={colIndex}
-            sx={{ wordBreak: "break-word", whiteSpace: "normal" }}
+            sx={{
+              wordBreak: "break-word",
+              whiteSpace: "normal",
+              border: "1px solid rgba(224, 224, 224, 1)", // Light gray border
+            }}
           >
             {value === null || value === undefined
               ? "-"
               : typeof value === "boolean"
-                ? value ? "Yes" : "No"
+                ? value
+                  ? "Yes"
+                  : "No"
                 : value}
           </TableCell>
         ))}
@@ -127,9 +149,14 @@ function MergedData() {
             </FormControl>
           </Box>
 
-          <Box sx={{ maxHeight: "400px", overflowY: "auto", overflowX: "auto" }}>
+          <Box sx={{
+            maxHeight: "400px", overflowY: "auto", overflowX: "auto", display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "200px",
+          }}>
             {loading ? (
-              <Typography align="center">Loading data...</Typography>
+              <ClipLoader color="#4A90E2" size={50} />
             ) : data.length ? (
               <Table>
                 <TableHead>{renderTableHeaders()}</TableHead>
