@@ -15,7 +15,8 @@ import {
   InputLabel,
   Card,
 } from "@mui/material";
-
+import { BASE_URL } from "./Constant";
+import Layout from "../layout/Layout";
 function DataAnalysis() {
   const [data, setData] = useState([]); // Holds the dataset
   const [currentPage, setCurrentPage] = useState(1); // Current page
@@ -27,7 +28,7 @@ function DataAnalysis() {
     const fetchData = async () => {
       try {
         setLoading(true); // Set loading state to true
-        const response = await fetch("http://54.146.176.249:5000/api/merged_data");
+        const response = await fetch(`${BASE_URL}/api/merged_data`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -102,10 +103,10 @@ function DataAnalysis() {
             {value === null || value === undefined
               ? "-" // Handle null or undefined explicitly
               : typeof value === "boolean"
-              ? value
-                ? "Yes"
-                : "No" // Handle boolean values
-              : value} {/* Display everything else as it is */}
+                ? value
+                  ? "Yes"
+                  : "No" // Handle boolean values
+                : value} {/* Display everything else as it is */}
           </TableCell>
         ))}
       </TableRow>
@@ -115,11 +116,11 @@ function DataAnalysis() {
   // Calculate total pages for pagination
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
-  return (
+  return (<Layout>
     <Box
       sx={{
         background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
-        minHeight: "100vh",
+        // minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -195,6 +196,7 @@ function DataAnalysis() {
         </Card>
       </Container>
     </Box>
+   </Layout> 
   );
 }
 

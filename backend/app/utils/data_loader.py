@@ -15,7 +15,14 @@ def load_csv_from_local(file_name, nrows=None):
         return None
 
 def load_csv(file_name, nrows=None):
-    if Config.LOCAL_USE:
-        return load_csv_from_local(file_name, nrows)
-    else:
-        return load_csv_from_s3(file_name, nrows)
+    try:
+        if Config.LOCAL_USE:
+            data = load_csv_from_local(file_name, nrows)
+        else:
+            data = load_csv_from_s3(file_name, nrows)
+        if data is None:
+            raise ValueError(f"Failed to load {file_name}")
+        return data
+    except Exception as e:
+        print(f"Error in load_csv: {e}")
+        return None

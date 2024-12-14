@@ -20,6 +20,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Footer from "../ui/Footer";
+import { BASE_URL } from "./Constant";
+import Layout from "../layout/Layout";
 
 function DataAnalysis() {
   const [data, setData] = useState(null); // Holds the entire dataset
@@ -35,7 +37,7 @@ function DataAnalysis() {
     const fetchData = async () => {
       try {
         setLoading(true); // Set loading state to true
-        const response = await fetch("http://54.146.176.249:5000/api/data");
+        const response = await fetch(`${BASE_URL}/api/data`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -114,10 +116,10 @@ function DataAnalysis() {
             {value === null || value === undefined
               ? "-" // Handle null or undefined explicitly
               : typeof value === "boolean"
-              ? value
-                ? "Yes"
-                : "No" // Handle boolean values
-              : value}{" "}
+                ? value
+                  ? "Yes"
+                  : "No" // Handle boolean values
+                : value}{" "}
             {/* Display everything else as it is */}
           </TableCell>
         ))}
@@ -128,7 +130,7 @@ function DataAnalysis() {
   // Calculate total pages for pagination
   const totalPages = data ? Math.ceil(data[activeTab]?.length / itemsPerPage) : 1;
 
-  return (
+  return (<Layout>
     <Box
       sx={{
         background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
@@ -239,8 +241,7 @@ function DataAnalysis() {
         </Box>
       )}
 
-      <Footer />
-    </Box>
+    </Box></Layout>
   );
 }
 
