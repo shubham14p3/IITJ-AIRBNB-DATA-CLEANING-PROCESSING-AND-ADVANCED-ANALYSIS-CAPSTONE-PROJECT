@@ -6,7 +6,29 @@ IITJ AIRBNB DATA CLEANING, PROCESSING AND ADVANCED ANALYSIS
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 
+python -m venv venv
 
+pip install -r requirements.txt
+
+
+Command Prompt
+Use the following command:
+
+bash
+Copy code
+venv\Scripts\activate
+PowerShell
+Use the following command:
+
+bash
+Copy code
+.\venv\Scripts\Activate
+Git Bash
+If you're using Git Bash, you can activate the virtual environment with:
+
+bash
+Copy code
+source venv/Scripts/activate
 
 ## Welcome Screen
 
