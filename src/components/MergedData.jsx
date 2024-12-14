@@ -288,7 +288,7 @@ function MergedData() {
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => navigate("/final-insights")}
+            onClick={() => navigate("/fetch-unique-value")}
           >
             Next
           </Button>

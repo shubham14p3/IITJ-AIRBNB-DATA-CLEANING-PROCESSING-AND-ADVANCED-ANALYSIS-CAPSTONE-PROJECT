@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './ui/Home';
 import DataAnalysis from './components/DataAnalysis';
 import MergedData from './components/MergedData';
+import FetchUniqueValue from './components/FetchUniqueValue';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/data-analysis" element={<DataAnalysis />} />
         <Route path="/merged-data" element={<MergedData />} />
+        <Route path="/fetch-unique-value" element={<FetchUniqueValue />} />
       </Routes>
     </Router>
   );
