@@ -52,7 +52,7 @@ def fetch_from_rds():
     try:
         # Get the table name from the query parameters
         table_name = request.args.get("table_name", "merged_data1")  # Default table name
-        limit = int(request.args.get("limit", 5000))  # Default to fetch top 5 records
+        limit = int(request.args.get("limit", 500000))  # Default to fetch top 5 records
 
         # Fetch top records from the table
         records = fetch_top_records(table_name, limit=limit)
