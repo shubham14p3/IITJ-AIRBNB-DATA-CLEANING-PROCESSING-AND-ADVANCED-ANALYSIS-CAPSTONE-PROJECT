@@ -161,10 +161,10 @@ function MergedData() {
             {value === null || value === undefined
               ? "-"
               : typeof value === "boolean"
-              ? value
-                ? "Yes"
-                : "No"
-              : value}
+                ? value
+                  ? "Yes"
+                  : "No"
+                : value}
           </TableCell>
         ))}
       </TableRow>
@@ -294,6 +294,8 @@ function MergedData() {
           </Button>
         </Box>
       </Box>
+      <br />
+      <br />
     </Layout>
   );
 }
