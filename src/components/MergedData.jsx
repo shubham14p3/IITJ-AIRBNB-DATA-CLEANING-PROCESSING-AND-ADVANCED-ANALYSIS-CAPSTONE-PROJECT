@@ -77,10 +77,7 @@ function MergedData() {
               color: "#fff",
               position: "sticky",
               top: 0,
-              zIndex: 1,
               textAlign: "center",
-              borderBottom: "2px solid #ddd",
-              textTransform: "capitalize",
               padding: "10px",
             }}
           >
@@ -103,7 +100,6 @@ function MergedData() {
               padding: "10px",
               border: "1px solid rgba(224, 224, 224, 1)",
               wordBreak: "break-word",
-              whiteSpace: "normal",
             }}
           >
             {value === null || value === undefined
@@ -123,15 +119,17 @@ function MergedData() {
 
   return (
     <Layout>
-      <Box sx={{
-        paddingY: 4,
-        paddingX: 2,
-        width: "95%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        margin: "0 auto",
-      }}>
+      <Box
+        sx={{
+          paddingY: 4,
+          paddingX: 2,
+          width: "95%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          margin: "0 auto",
+        }}
+      >
         <Typography
           variant="h6"
           align="center"
@@ -146,6 +144,7 @@ function MergedData() {
             boxShadow: 4,
             borderRadius: 4,
             padding: 3,
+            width: "100%",
           }}
         >
           <Box
@@ -177,16 +176,13 @@ function MergedData() {
               overflowY: "auto",
               overflowX: "auto",
               display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
               width: "100%",
-              minHeight: "200px",
             }}
           >
             {loading ? (
               <ClipLoader color="#4A90E2" size={50} />
             ) : data.length ? (
-              <Table sx={{ width: "100%" }}>
+              <Table sx={{ minWidth: "100%" }}>
                 <TableHead>{renderTableHeaders()}</TableHead>
                 <TableBody>{renderTableRows()}</TableBody>
               </Table>
@@ -205,6 +201,7 @@ function MergedData() {
             />
           </Box>
         </Card>
+
         <Box marginTop={4} display="flex" justifyContent="space-between">
           <Button
             variant="contained"
