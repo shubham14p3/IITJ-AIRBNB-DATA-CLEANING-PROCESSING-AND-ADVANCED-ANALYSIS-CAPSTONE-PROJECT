@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../layout/Layout";
 import "./HotelOwnerForm.css";
-
+import ownerImage from "../../assets/owner.webp";
 const HotelOwnerForm = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -26,6 +26,7 @@ const HotelOwnerForm = () => {
     return (
         <Layout>
             <div className="form-container">
+                <img src={ownerImage} alt="Airbnb" className="airbnb-image" />
                 <h1>You have selected Hotel Owner Form</h1>
                 <form className="form">
                     <label>

@@ -101,3 +101,10 @@ button:hover {
 button:active {
     transform: scale(0.98);
 }
+
+.airbnb-image {
+    display: block;
+    margin: 0 auto;
+    max-width: 150px;
+    margin-bottom: 20px;
+}
