@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Pagination,
   Box,
@@ -16,88 +16,40 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
-import { BASE_URL } from "./Constant";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchMergedData, loadDataToRDS } from "../slice/mergedDataSlice";
 import Layout from "../layout/Layout";
 import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 
 function MergedData() {
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [searchText, setSearchText] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const initializeData = async () => {
-    setLoading(true);
-    try {
-      const localData = localStorage.getItem("mergedData");
-      if (localData) {
-        const parsedData = JSON.parse(localData);
-        setData(parsedData); // Set data from localStorage
-        setFilteredData(parsedData);
-        setLoading(false);
-      }
+  // Redux State
+  const { data, loading, error } = useSelector((state) => state.mergedData);
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [searchText, setSearchText] = React.useState("");
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [itemsPerPage, setItemsPerPage] = React.useState(5);
 
-      // Fetch full data from the server
-      const response = await fetch(`${BASE_URL}/api/fetch-from-rds`);
-      if (!response.ok) throw new Error("Failed to fetch data");
-      const result = await response.json();
-
-      if (result.status && result.data) {
-        setData(result.data); // Keep full data for rendering
-        setFilteredData(result.data);
-
-        // Save a truncated version in localStorage
-        let truncatedData = [];
-        let dataSize = 0;
-
-        for (const row of result.data) {
-          const rowString = JSON.stringify(row);
-          const rowSize = new Blob([rowString]).size;
-
-          if (dataSize + rowSize > 4.8 * 1024 * 1024) break; // Stop if size exceeds 4.8 MB
-          truncatedData.push(row);
-          dataSize += rowSize;
-        }
-
-        localStorage.setItem("mergedData", JSON.stringify(truncatedData));
-        console.log(
-          `Saved ${truncatedData.length} rows (under 4.8 MB) to localStorage.`
-        );
-      } else {
-        console.error("No data available:", result.message);
-        setData([]);
-        setFilteredData([]);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setData([]);
-      setFilteredData([]);
-    } finally {
-      setLoading(false);
+  // Fetch data only if not already in store
+  useEffect(() => {
+    if (!data || data.length === 0) {
+      dispatch(fetchMergedData());
+    } else {
+      setFilteredData(data);
     }
-  };
+  }, [data, dispatch]);
 
   useEffect(() => {
-    initializeData();
-  }, []);
-
-  const reloadData = () => {
-    localStorage.removeItem("mergedData"); // Clear localStorage
-    setData([]); // Clear state
-    setFilteredData([]);
-    setCurrentPage(1);
-    initializeData(); // Re-fetch data
-  };
+    setFilteredData(data);
+  }, [data]);
 
   const handleSearchChange = (event) => {
     const value = event.target.value;
     setSearchText(value);
 
-    // Filter data based on the search text
     const lowercasedValue = value.toLowerCase();
     const filtered = data.filter((row) =>
       Object.values(row).some((val) =>
@@ -105,7 +57,7 @@ function MergedData() {
       )
     );
     setFilteredData(filtered);
-    setCurrentPage(1); // Reset to the first page after search
+    setCurrentPage(1);
   };
 
   const handlePageChange = (event, newPage) => setCurrentPage(newPage);
@@ -120,23 +72,22 @@ function MergedData() {
     return filteredData.slice(startIndex, startIndex + itemsPerPage);
   };
 
+  const handleLoadDataToRDS = () => {
+    dispatch(loadDataToRDS()).then(() => {
+      alert("Data successfully uploaded to RDS!");
+    });
+  };
+
+  const handleLoadDataFromRDS = () => {
+    dispatch(fetchMergedData());
+  };
+
   const renderTableHeaders = () => {
     if (!filteredData.length) return null;
     return (
       <TableRow>
         {Object.keys(filteredData[0]).map((header, index) => (
-          <TableCell
-            key={index}
-            sx={{
-              fontWeight: "bold",
-              background: "linear-gradient(45deg, #2196f3, #21cbf3)",
-              color: "#fff",
-              position: "sticky",
-              top: 0,
-              textAlign: "center",
-              padding: "10px",
-            }}
-          >
+          <TableCell key={index} sx={{ fontWeight: "bold", textAlign: "center" }}>
             {header.replace(/_/g, " ").toUpperCase()}
           </TableCell>
         ))}
@@ -149,22 +100,8 @@ function MergedData() {
     return currentData.map((item, rowIndex) => (
       <TableRow key={rowIndex}>
         {Object.values(item).map((value, colIndex) => (
-          <TableCell
-            key={colIndex}
-            sx={{
-              textAlign: "center",
-              padding: "10px",
-              border: "1px solid rgba(224, 224, 224, 1)",
-              wordBreak: "break-word",
-            }}
-          >
-            {value === null || value === undefined
-              ? "-"
-              : typeof value === "boolean"
-                ? value
-                  ? "Yes"
-                  : "No"
-                : value}
+          <TableCell key={colIndex} sx={{ textAlign: "center" }}>
+            {value || "-"}
           </TableCell>
         ))}
       </TableRow>
@@ -175,26 +112,11 @@ function MergedData() {
 
   return (
     <Layout>
-      <Box
-        sx={{
-          paddingY: 4,
-          paddingX: 2,
-          width: "95%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          margin: "0 auto",
-        }}
-      >
-        <Typography
-          variant="h6"
-          align="center"
-          sx={{ fontWeight: "bold", color: "#333", marginBottom: 3 }}
-        >
+      <Box sx={{ paddingY: 4, paddingX: 2, width: "95%", margin: "0 auto" }}>
+        <Typography variant="h6" align="center" sx={{ fontWeight: "bold", marginBottom: 3 }}>
           Merged Data Records
         </Typography>
 
-        {/* Search Bar */}
         <TextField
           label="Search"
           variant="outlined"
@@ -204,25 +126,10 @@ function MergedData() {
           sx={{ marginBottom: 2 }}
         />
 
-        <Card
-          sx={{
-            backgroundColor: "#fff",
-            boxShadow: 4,
-            borderRadius: 4,
-            padding: 3,
-            width: "100%",
-          }}
-        >
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            marginBottom={2}
-          >
+        <Card sx={{ padding: 3, boxShadow: 4, borderRadius: 4 }}>
+          <Box display="flex" justifyContent="space-between" marginBottom={2}>
             <FormControl variant="outlined" size="small">
-              <InputLabel id="rows-per-page-select-label">
-                Rows per page
-              </InputLabel>
+              <InputLabel id="rows-per-page-select-label">Rows per page</InputLabel>
               <Select
                 labelId="rows-per-page-select-label"
                 value={itemsPerPage}
@@ -234,30 +141,32 @@ function MergedData() {
                 <MenuItem value={20}>20</MenuItem>
               </Select>
             </FormControl>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={reloadData}
-            >
-              Reload Data
-            </Button>
+            <Box>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleLoadDataFromRDS}
+                sx={{ marginRight: 1 }}
+              >
+                Load Data from RDS
+              </Button>
+              <Button variant="contained" color="secondary" onClick={handleLoadDataToRDS}>
+                Load Data to RDS
+              </Button>
+            </Box>
           </Box>
 
-          <Box
-            sx={{
-              maxHeight: "400px",
-              overflowY: "scroll",
-              overflowX: "auto",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              minHeight: "200px", // Ensure the loader is vertically centered
-            }}
-          >
+          <Box sx={{ maxHeight: "400px", overflowY: "auto" }}>
             {loading ? (
-              <ClipLoader color="#4A90E2" size={50} />
+              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "200px" }}>
+                <ClipLoader color="#4A90E2" size={50} />
+              </Box>
+            ) : error ? (
+              <Typography color="error" align="center">
+                {error}
+              </Typography>
             ) : filteredData.length ? (
-              <Table sx={{ minWidth: "100%" }}>
+              <Table>
                 <TableHead>{renderTableHeaders()}</TableHead>
                 <TableBody>{renderTableRows()}</TableBody>
               </Table>
@@ -272,7 +181,6 @@ function MergedData() {
               page={currentPage}
               onChange={handlePageChange}
               color="primary"
-              size="large"
             />
           </Box>
         </Card>
