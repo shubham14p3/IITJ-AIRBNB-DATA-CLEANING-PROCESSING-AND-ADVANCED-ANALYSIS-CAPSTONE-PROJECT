@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import airbnbImage from "../assets/airbnb.webp";
 import customerImage from "../assets/customer.webp";
@@ -10,22 +11,31 @@ const cardData = [
         title: "Airbnb",
         image: airbnbImage,
         backText: "Explore our customer services!",
+        route: "/airbnb-form",
     },
     {
         id: 2,
         title: "Customer",
         image: customerImage,
         backText: "Browse property listings easily!",
+        route: "/customer-form",
     },
     {
         id: 3,
         title: "Hotel Owner",
         image: ownerImage,
         backText: "Discover Airbnb options here!",
+        route: "/hotel-owner-form",
     },
 ];
 
 const Selection = () => {
+    const navigate = useNavigate();
+
+    const handleRedirect = (route) => {
+        navigate(route);
+    };
+
     return (
         <>
             <Layout>
@@ -48,6 +58,12 @@ const Selection = () => {
                                     {/* Card Back */}
                                     <div className="card-back">
                                         <p className="card-back-text">{card.backText}</p>
+                                        <button
+                                            className="proceed-button"
+                                            onClick={() => handleRedirect(card.route)}
+                                        >
+                                            Proceed as {card.title}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -155,11 +171,33 @@ const Selection = () => {
                     transform: rotateY(180deg);
                     color: #fff;
                     padding: 1rem;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 .card-back-text {
                     font-size: 1.2rem;
                     line-height: 1.5;
+                    margin-bottom: 1rem;
+                }
+
+                /* Proceed Button */
+                .proceed-button {
+                    background-color: #fff;
+                    color: #6c63ff;
+                    border: 2px solid #fff;
+                    padding: 0.5rem 1rem;
+                    font-size: 1rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                }
+
+                .proceed-button:hover {
+                    background-color: #6c63ff;
+                    color: #fff;
                 }
                 `}
             </style>
