@@ -1,14 +1,14 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import {
     Box,
-    FormControl,
-    Select,
-    MenuItem,
     Typography,
     Card,
     Grid,
-    InputBase,
     Button,
+    Popover,
+    List,
+    ListItemButton,
+    InputBase,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUniqueValues } from "../slice/uniqueValuesSlice";
@@ -16,13 +16,91 @@ import Layout from "../layout/Layout";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useNavigate } from "react-router-dom";
 
+const CustomSearchDropdown = ({ label, values, onSelect, selectedValue }) => {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [search, setSearch] = React.useState("");
+    const [filteredValues, setFilteredValues] = React.useState(values);
+
+    const handleOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+        setFilteredValues(values); // Reset search filter on open
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setSearch(""); // Clear search input
+    };
+
+    const handleSearchChange = (e) => {
+        const query = e.target.value.toLowerCase();
+        setSearch(query);
+        setFilteredValues(values.filter((val) => val.toLowerCase().includes(query)));
+    };
+
+    const handleSelect = (value) => {
+        onSelect(value);
+        handleClose();
+    };
+
+    const open = Boolean(anchorEl);
+
+    return (
+        <Box sx={{ marginBottom: 3 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: "bold", marginBottom: 1 }}>
+                {label.toUpperCase()}
+            </Typography>
+            <Box
+                sx={{
+                    padding: "8px",
+                    border: "1px solid #ddd",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    backgroundColor: "#f9f9f9",
+                }}
+                onClick={handleOpen}
+            >
+                {selectedValue || `Select ${label}`}
+            </Box>
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                PaperProps={{ style: { maxHeight: 300, width: "250px" } }}
+                disableEnforceFocus // Prevents focus conflicts
+                disableAutoFocus    // Prevents auto-focus on the Popover
+            >
+                <Box sx={{ padding: "8px", borderBottom: "1px solid #ddd" }}>
+                    <InputBase
+                        placeholder={`Search ${label}`}
+                        value={search}
+                        onChange={handleSearchChange}
+                        sx={{ width: "100%", padding: "4px" }}
+                    />
+                </Box>
+                <List>
+                    {filteredValues.map((value, idx) => (
+                        <ListItemButton key={idx} onClick={() => handleSelect(value)}>
+                            {value}
+                        </ListItemButton>
+                    ))}
+                    {filteredValues.length === 0 && (
+                        <Typography sx={{ padding: "8px", textAlign: "center" }}>
+                            No results found
+                        </Typography>
+                    )}
+                </List>
+            </Popover>
+        </Box>
+    );
+};
+
 function FetchUniqueValue() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const { data, loading, error } = useSelector((state) => state.uniqueValues);
     const [selectedValues, setSelectedValues] = React.useState({});
-    const [searchQueries, setSearchQueries] = React.useState({});
     const [isRefreshing, setIsRefreshing] = React.useState(false);
 
     useEffect(() => {
@@ -35,29 +113,12 @@ function FetchUniqueValue() {
         if (data && Object.keys(data).length) {
             const initialSelection = Object.keys(data).reduce((acc, key) => ({ ...acc, [key]: "" }), {});
             setSelectedValues(initialSelection);
-
-            const initialSearch = Object.keys(data).reduce((acc, key) => ({ ...acc, [key]: "" }), {});
-            setSearchQueries(initialSearch);
         }
     }, [data]);
 
     const handleRefresh = () => {
         setIsRefreshing(true);
         dispatch(fetchUniqueValues()).finally(() => setIsRefreshing(false));
-    };
-
-    const handleSelectChange = (key) => (event) => {
-        setSelectedValues((prev) => ({
-            ...prev,
-            [key]: event.target.value,
-        }));
-    };
-
-    const handleSearchChange = (key) => (event) => {
-        setSearchQueries((prev) => ({
-            ...prev,
-            [key]: event.target.value,
-        }));
     };
 
     const handleDownload = () => {
@@ -71,7 +132,7 @@ function FetchUniqueValue() {
         document.body.removeChild(a);
     };
 
-    const renderDropdowns = useMemo(() => {
+    const renderDropdowns = () => {
         const keys = Object.entries(data);
         const middleIndex = Math.ceil(keys.length / 2);
         const leftSection = keys.slice(0, middleIndex);
@@ -79,53 +140,15 @@ function FetchUniqueValue() {
 
         const renderSection = (section) =>
             section.map(([key, values], index) => (
-                <Box key={index} sx={{ marginBottom: 3, width: "100%" }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: "bold", marginBottom: 1 }}>
-                        {key.replace(/_/g, " ").toUpperCase()}
-                    </Typography>
-                    <FormControl fullWidth>
-                        <Select
-                            value={selectedValues[key] || ""}
-                            onChange={handleSelectChange(key)}
-                            displayEmpty
-                            MenuProps={{
-                                PaperProps: {
-                                    style: { maxHeight: 300, overflowY: "auto" },
-                                },
-                            }}
-                            renderValue={(selected) =>
-                                selected ? selected : `Select ${key}`
-                            }
-                            sx={{ backgroundColor: "#f9f9f9", borderRadius: "8px" }}
-                        >
-                            <Box sx={{ padding: "8px", borderBottom: "1px solid #ddd" }}>
-                                <InputBase
-                                    placeholder={`Search ${key}`}
-                                    value={searchQueries[key] || ""}
-                                    onChange={handleSearchChange(key)}
-                                    sx={{
-                                        width: "100%",
-                                        padding: "4px 8px",
-                                        border: "1px solid #ddd",
-                                        borderRadius: "4px",
-                                    }}
-                                />
-                            </Box>
-                            {values
-                                .filter((value) =>
-                                    value
-                                        .toString()
-                                        .toLowerCase()
-                                        .includes((searchQueries[key] || "").toLowerCase())
-                                )
-                                .map((value, idx) => (
-                                    <MenuItem key={idx} value={value}>
-                                        {value}
-                                    </MenuItem>
-                                ))}
-                        </Select>
-                    </FormControl>
-                </Box>
+                <CustomSearchDropdown
+                    key={index}
+                    label={key.replace(/_/g, " ")}
+                    values={values.map(String)} // Ensure values are strings for comparison
+                    onSelect={(value) =>
+                        setSelectedValues((prev) => ({ ...prev, [key]: value }))
+                    }
+                    selectedValue={selectedValues[key]}
+                />
             ));
 
         return (
@@ -138,7 +161,7 @@ function FetchUniqueValue() {
                 </Grid>
             </Grid>
         );
-    }, [data, selectedValues, searchQueries]);
+    };
 
     return (
         <Layout>
@@ -165,7 +188,7 @@ function FetchUniqueValue() {
                                 {error}
                             </Typography>
                         ) : Object.keys(data).length ? (
-                            <Box sx={{ maxHeight: "80vh", overflowY: "auto" }}>{renderDropdowns}</Box>
+                            <Box sx={{ maxHeight: "80vh", overflowY: "auto" }}>{renderDropdowns()}</Box>
                         ) : (
                             <Typography align="center">No data available.</Typography>
                         )}

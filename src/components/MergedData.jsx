@@ -87,7 +87,26 @@ function MergedData() {
     return (
       <TableRow>
         {Object.keys(filteredData[0]).map((header, index) => (
-          <TableCell key={index} sx={{ fontWeight: "bold", textAlign: "center" }}>
+          <TableCell
+            key={index}
+            sx={{
+              fontWeight: "bold",
+              background: "linear-gradient(90deg, #ff5722, #ff9800)", // Gradient background
+              color: "#fff", // White text for contrast
+              position: "sticky",
+              top: 0,
+              zIndex: 2, // Ensure it remains above scrolling rows
+              padding: "12px 16px", // Spacing for better readability
+              textAlign: "center", // Center-align header text
+              borderBottom: "2px solid #f0f0f0", // Add a subtle bottom border
+              textTransform: "uppercase", // Uppercase for uniform appearance
+              letterSpacing: "0.5px", // Slight spacing between letters
+              "&:hover": {
+                background: "linear-gradient(90deg, #ff9800, #ff5722)", // Reverse gradient on hover
+                boxShadow: "0 2px 5px rgba(0,0,0,0.2)", // Add shadow on hover
+              },
+            }}
+          >
             {header.replace(/_/g, " ").toUpperCase()}
           </TableCell>
         ))}
