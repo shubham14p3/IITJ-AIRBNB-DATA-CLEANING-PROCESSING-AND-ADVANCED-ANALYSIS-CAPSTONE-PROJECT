@@ -209,7 +209,7 @@ function FetchUniqueValue() {
                 <Button variant="contained" color="primary" onClick={() => navigate("/merged-data")}>
                     Back
                 </Button>
-                <Button variant="contained" color="secondary" onClick={() => navigate("/fetch-unique-value")}>
+                <Button variant="contained" color="secondary" onClick={() => navigate("/selection")}>
                     Next
                 </Button>
             </Box>
