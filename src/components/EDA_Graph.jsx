@@ -51,6 +51,22 @@ const EDA_Graph = () => {
         <Box sx={{ textAlign: "center", marginTop: 4 }}>
           <Typography variant="h5">No Data Available</Typography>
         </Box>
+        <Box marginTop={4} display="flex" justifyContent="space-between">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/merged-data")}
+          >
+            Back
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => navigate("/fetch-unique-value")}
+          >
+            Next
+          </Button>
+        </Box>
       </Layout>
     );
   }
@@ -499,7 +515,7 @@ const EDA_Graph = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate("merged-data")}
+            onClick={() => navigate("/merged-data")}
           >
             Back
           </Button>
