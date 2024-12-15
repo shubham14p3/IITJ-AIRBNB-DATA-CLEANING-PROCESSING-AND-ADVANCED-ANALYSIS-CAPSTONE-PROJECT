@@ -4,6 +4,7 @@ import Layout from "../layout/Layout";
 import airbnbImage from "../assets/airbnb.webp";
 import customerImage from "../assets/customer.webp";
 import ownerImage from "../assets/owner.webp";
+import { Box, Button } from "@mui/material";
 
 const cardData = [
     {
@@ -70,6 +71,13 @@ const Selection = () => {
                         ))}
                     </div>
                 </div>
+                <Box sx={{ marginTop: 4, display: "flex", marginLeft: "5%" }}>
+                    <Button variant="contained" color="primary" onClick={() => navigate("/fetch-unique-value")}>
+                        Back
+                    </Button>
+                </Box>
+                <br />
+                <br />
             </Layout>
 
             <style>

@@ -206,7 +206,7 @@ function FetchUniqueValue() {
             )}
 
             <Box sx={{ marginTop: 4, display: "flex", justifyContent: "space-between" }}>
-                <Button variant="contained" color="primary" onClick={() => navigate("/merged-data")}>
+                <Button variant="contained" color="primary" onClick={() => navigate("/eda-graph")}>
                     Back
                 </Button>
                 <Button variant="contained" color="secondary" onClick={() => navigate("/selection")}>

@@ -82,6 +82,17 @@ function MergedData() {
     dispatch(fetchMergedData());
   };
 
+  const handleDownload = () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "merged-data.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+};
+
   const renderTableHeaders = () => {
     if (!filteredData.length) return null;
     return (
@@ -204,7 +215,7 @@ function MergedData() {
           </Box>
         </Card>
 
-        <Box marginTop={4} display="flex" justifyContent="space-between">
+        <Box marginTop={4} display="flex" justifyContent="space-between"  >
           <Button
             variant="contained"
             color="primary"
@@ -212,10 +223,13 @@ function MergedData() {
           >
             Back
           </Button>
+          <Button variant="contained" color="secondary" onClick={handleDownload}>
+            Download JSON
+          </Button>
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => navigate("/fetch-unique-value")}
+            onClick={() => navigate("/eda-graph")}
           >
             Next
           </Button>

@@ -5,6 +5,7 @@ import DataAnalysis from './components/DataAnalysis';
 import MergedData from './components/MergedData';
 import FetchUniqueValue from './components/FetchUniqueValue';
 import Selection from './components/Selection';
+import EDA_Graph from './components/EDA_Graph';
 import AirbnbForm from './components/pages/AirbnbForm';
 import CustomerForm from './components/pages/CustomerForm';
 import HotelOwnerForm from './components/pages/HotelOwnerForm';
@@ -21,6 +22,7 @@ function App() {
         <Route path="/airbnb-form" element={<AirbnbForm />} />
         <Route path="/customer-form" element={<CustomerForm />} />
         <Route path="/hotel-owner-form" element={<HotelOwnerForm />} />
+        <Route path="/eda-graph" element={<EDA_Graph />} />
       </Routes>
     </Router>
   );

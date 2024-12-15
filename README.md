@@ -6,6 +6,8 @@ IITJ AIRBNB DATA CLEANING, PROCESSING AND ADVANCED ANALYSIS
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 
+npm install react-chartjs-2 chart.js react-bootstrap bootstrap
+npm install leaflet react-leaflet recharts
 
 
 ## Welcome Screen
