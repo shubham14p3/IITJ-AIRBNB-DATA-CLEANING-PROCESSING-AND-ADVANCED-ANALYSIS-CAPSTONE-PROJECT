@@ -1,9 +1,71 @@
+import os
+import joblib
 from flask import Blueprint, jsonify, request
 import pandas as pd
 from ..utils.db_utils import fetch_top_records,get_db_connection,fetch_last_records_from_db
 from ..config import Config
+from flask_cors import CORS
 
 fetched_data_routes = Blueprint('fetched_data_routes', __name__)
+CORS(fetched_data_routes, resources={r"/api/*": {"origins": "*"}})
+# Construct the absolute path to the model file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(current_dir, 'ui_model.pkl')
+
+# Load the model
+model = joblib.load(model_path) 
+
+
+try:
+    model = joblib.load(model_path)
+    print(f"Model loaded successfully from {model_path}")
+except Exception as e:
+    print(f"Error loading model: {e}")
+
+@fetched_data_routes.route('/predict-final', methods=['GET'])
+def final_predict():
+    """
+    API endpoint to predict the price based on input features using query parameters.
+    """
+    try:
+        print("Final Predict API called")
+
+        # Parse query parameters
+        params = request.args.to_dict()  # Convert to a standard dictionary for easier handling
+        print("Raw query parameters:", params)
+
+        # Ensure all input parameters are present and properly cast
+        input_data = [
+            [
+                float(params.get("latitude", "0") or 0),  # Handle missing or empty values
+                float(params.get("longitude", "0") or 0),
+                int(params.get("minimum_nights", "0") or 0),
+                int(params.get("maximum_nights", "0") or 0),
+                int(params.get("number_of_reviews", "0") or 0),
+                int(params.get("review_scores_rating", "0") or 0),
+                int(params.get("room_type_id", "0") or 0),
+                int(params.get("cancellation_policy_id", "0") or 0),
+                int(params.get("year", "0") or 0),
+                int(params.get("day_of_week", "0") or 0),
+            ]
+        ]
+
+        print("Sanitized input data:", input_data)
+
+        # Perform prediction using the model
+        prediction = model.predict(input_data)[0]  # Assuming the model outputs a single value
+        print("Prediction result:", prediction)
+
+        return jsonify({"message": "Prediction successful", "predicted_price": prediction, "status": True}), 200
+
+    except ValueError as ve:
+        print(f"ValueError in /predict-final route: {ve}")
+        return jsonify({"error": f"Invalid input data: {ve}", "status": False}), 400
+
+    except Exception as e:
+        print(f"Error in /predict-final route: {e}")
+        return jsonify({"error": str(e), "status": False}), 500
+
 
 @fetched_data_routes.route('/fetch-unique-values', methods=['GET'])
 def fetch_unique_values():
@@ -245,3 +307,4 @@ def fetch_last_records():
             "error": str(e),
             "status": False
         }), 500
+

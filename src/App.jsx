@@ -12,6 +12,7 @@ import TrialPage from './components/TrialPage';
 import AirbnbForm from './components/pages/AirbnbForm';
 import CustomerForm from './components/pages/CustomerForm';
 import HotelOwnerForm from './components/pages/HotelOwnerForm';
+import Page404 from './components/Page404';
 
 function App() {
   return (
@@ -27,8 +28,10 @@ function App() {
         <Route path="/customer-form" element={<CustomerForm />} />
         <Route path="/hotel-owner-form" element={<HotelOwnerForm />} />
         <Route path="/eda-graph" element={<EDA_Graph />} />
-        <Route path="/trial-page" element={<TrialPage />} />
+        <Route path="/final-result" element={<TrialPage />} />
         <Route path="/prediction" element={<Prediction />} />
+        {/* Catch-all route for 404 */}
+        <Route path="*" element={<Page404 />} />
       </Routes>
     </Router>
   );

@@ -3,3 +3,5 @@ Flask-Cors
 boto3
 pandas
 mysql-connector-python
+joblib
+scikit-learn

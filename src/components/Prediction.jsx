@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Loader from './Loader';
 import Layout from '../layout/Layout';
 import {
@@ -22,6 +22,16 @@ const Prediction = () => {
         'review_scores_rating', 'room_type_id', 'cancellation_policy_id',
         'year', 'day_of_week', 'available', 'instant_bookable',
     ];
+
+    const dayToNumber = {
+        "Sunday": 6,
+        "Monday": 0,
+        "Tuesday": 1,
+        "Wednesday": 2,
+        "Thursday": 3,
+        "Friday": 4,
+        "Saturday": 5,
+    };
 
     const [formData, setFormData] = useState(
         features.reduce((acc, feature) => ({ ...acc, [feature]: "" }), {})
@@ -62,18 +72,48 @@ const Prediction = () => {
     };
 
     const handleSubmit = async () => {
+        // Prepare payload
+        const payload = {
+            latitude: parseFloat(formData.latitude || 0),
+            longitude: parseFloat(formData.longitude || 0),
+            minimum_nights: parseInt(formData.minimum_nights || 0, 10),
+            maximum_nights: parseInt(formData.maximum_nights || 0, 10),
+            number_of_reviews: parseInt(formData.number_of_reviews || 0, 10),
+            review_scores_rating: parseInt(formData.review_scores_rating || 0, 10),
+            room_type_id: parseInt(formData.room_type_id || 0, 10),
+            cancellation_policy_id: parseInt(formData.cancellation_policy_id || 0, 10),
+            year: parseInt(formData.year || 0, 10),
+            day_of_week: dayToNumber[formData.day_of_week] || 0,
+        };
+        localStorage.setItem('form-data', JSON.stringify(formData));
+
+        // Convert payload to query string
+        const queryString = new URLSearchParams(payload).toString();
         try {
-            const response = await fetch(`${BASE_URL}/api/predict_rate`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+            const response = await fetch(`${BASE_URL}/api/predict-final?${queryString}`, {
+                method: "GET", // Use GET to send data via query parameters
             });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || "Failed to fetch prediction.");
+            }
+
             const result = await response.json();
-            alert(result.message || "Prediction Submitted Successfully!");
+
+            // Store the predicted_price in local storage
+            localStorage.setItem('predicted_price', result.predicted_price);
+
+            // Navigate to the final result page
+            navigate("/final-result");
         } catch (err) {
-            alert("Failed to submit the prediction.");
+            console.error("Error during fetch:", err);
+            alert(err.message || "Failed to fetch the prediction.");
         }
+
     };
+
+
 
     return (
         <Layout>
@@ -86,7 +126,7 @@ const Prediction = () => {
                         <Grid container spacing={2}>
                             {/* NAME Field */}
                             <Grid item xs={12} sm={6}>
-                                <Typography sx={{ mb: 1, fontWeight: 'bold', color: '#555' }}>NAME</Typography>
+                                <Typography sx={{ mb: 1, fontWeight: 'bold', color: '#555' }}>NAME *</Typography>
                                 <Select
                                     value={formData.name}
                                     onChange={(e) => handleInputChange('name', e.target.value)}
@@ -102,13 +142,13 @@ const Prediction = () => {
 
                             {/* YEAR Field */}
                             <Grid item xs={12} sm={6}>
-                                <Typography sx={{ mb: 1, fontWeight: 'bold', color: '#555' }}>YEAR</Typography>
+                                <Typography sx={{ mb: 1, fontWeight: 'bold', color: '#555' }}>YEAR *</Typography>
                                 <Select
                                     value={formData.year}
                                     onChange={(e) => handleInputChange('year', e.target.value)}
                                     displayEmpty
                                     fullWidth
-                                    disabled={!nameSelected} // Disable until name is selected
+                                    disabled={!nameSelected}
                                 >
                                     <MenuItem value=""><em>None</em></MenuItem>
                                     {futureYears.map((year, index) => (
@@ -119,16 +159,16 @@ const Prediction = () => {
 
                             {/* DAY OF WEEK Field */}
                             <Grid item xs={12} sm={6}>
-                                <Typography sx={{ mb: 1, fontWeight: 'bold', color: '#555' }}>DAY OF WEEK</Typography>
+                                <Typography sx={{ mb: 1, fontWeight: 'bold', color: '#555' }}>DAY OF WEEK *</Typography>
                                 <Select
                                     value={formData.day_of_week}
                                     onChange={(e) => handleInputChange('day_of_week', e.target.value)}
                                     displayEmpty
                                     fullWidth
-                                    disabled={!nameSelected} // Disable until name is selected
+                                    disabled={!nameSelected}
                                 >
                                     <MenuItem value=""><em>None</em></MenuItem>
-                                    {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((day, index) => (
+                                    {Object.keys(dayToNumber).map((day, index) => (
                                         <MenuItem key={index} value={day}>{day}</MenuItem>
                                     ))}
                                 </Select>
@@ -157,7 +197,7 @@ const Prediction = () => {
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSubmit}
-                                disabled={!nameSelected} // Disable until name is selected
+                                disabled={!nameSelected || !formData.year || !formData.day_of_week}
                             >
                                 Submit
                             </Button>
@@ -170,7 +210,7 @@ const Prediction = () => {
                 <Button variant="contained" color="primary" onClick={() => navigate("/new-merged-data")}>
                     Back
                 </Button>
-                <Button variant="contained" color="secondary" onClick={() => navigate("/")}>
+                <Button variant="contained" color="secondary" onClick={() => navigate("/final-result")}>
                     Next
                 </Button>
             </Box>
