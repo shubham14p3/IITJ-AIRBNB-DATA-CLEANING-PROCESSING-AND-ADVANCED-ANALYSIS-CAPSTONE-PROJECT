@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 import pandas as pd
-from ..utils.db_utils import fetch_top_records,get_db_connection
+from ..utils.db_utils import fetch_top_records,get_db_connection,fetch_last_records_from_db
 from ..config import Config
 
 fetched_data_routes = Blueprint('fetched_data_routes', __name__)
@@ -191,6 +191,56 @@ def fetch_record_count():
 
     except Exception as e:
         print(f"Error in /fetch-record-count route: {e}")
+        return jsonify({
+            "error": str(e),
+            "status": False
+        }), 500
+
+@fetched_data_routes.route('/fetch-last-records', methods=['GET'])
+def fetch_last_records():
+    """
+    API route to fetch the last 1000 records for specified features from the dataset in RDS.
+    """
+    try:
+        # Define the target table name and features to fetch
+        table_name = "merged_data1"
+        features = [
+            'latitude', 'longitude', 'minimum_nights', 'maximum_nights',
+            'number_of_reviews', 'review_scores_rating', 'room_type_id',
+            'cancellation_policy_id','name'
+        ]
+
+        # Limit the number of records to fetch
+        limit = 1000
+
+        # Fetch the data from the RDS table, ordered by an insertion column (e.g., id or timestamp)
+        records = fetch_last_records_from_db(table_name, limit=limit, order_by="id DESC")  # Adjust 'id' to your column name
+
+        if records:
+            # Convert records to a DataFrame for easier processing
+            df = pd.DataFrame(records)
+
+            # Filter only the specified features
+            filtered_data = df[features]
+
+            # Create unique values list for each feature
+            unique_values = {
+                column: filtered_data[column].dropna().unique().tolist() for column in filtered_data.columns
+            }
+
+            return jsonify({
+                "message": "Last records fetched successfully",
+                "data": unique_values,
+                "status": True
+            }), 200
+        else:
+            return jsonify({
+                "message": "No records found or table is empty",
+                "data": [],
+                "status": False
+            }), 404
+    except Exception as e:
+        print(f"Error in /fetch-last-records route: {e}")
         return jsonify({
             "error": str(e),
             "status": False

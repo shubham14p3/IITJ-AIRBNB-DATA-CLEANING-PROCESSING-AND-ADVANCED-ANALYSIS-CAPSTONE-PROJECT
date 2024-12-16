@@ -165,3 +165,29 @@ def fetch_top_records(table_name, limit=5):
     finally:
         if conn:
             conn.close()
+
+
+def fetch_last_records_from_db(table_name, limit=1000, order_by="id DESC"):
+    """
+    Fetch the last N records from the specified table, ordered by the given column.
+    """
+    conn = None
+    try:
+        # Establish the database connection
+        conn = get_db_connection()
+
+        # Build the query to fetch the last N records
+        query = f"SELECT * FROM {table_name} ORDER BY {order_by} LIMIT {limit}"
+
+        # Execute the query
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            records = cursor.fetchall()
+
+        return records
+    except Exception as e:
+        print(f"Error fetching last records from {table_name}: {e}")
+        raise
+    finally:
+        if conn:
+            conn.close()

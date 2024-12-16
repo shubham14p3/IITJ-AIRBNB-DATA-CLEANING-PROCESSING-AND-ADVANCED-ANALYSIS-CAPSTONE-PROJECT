@@ -145,7 +145,7 @@ function NewMergedData() {
     <Layout>
       <Box sx={{ paddingY: 4, paddingX: 2, width: "95%", margin: "0 auto" }}>
         <Typography variant="h6" align="center" sx={{ fontWeight: "bold", marginBottom: 3 }}>
-          Consilidated Dataset(Step III)
+          Consilidated Dataset (After Adding New Data)
         </Typography>
         <RecordCount />
         <TextField

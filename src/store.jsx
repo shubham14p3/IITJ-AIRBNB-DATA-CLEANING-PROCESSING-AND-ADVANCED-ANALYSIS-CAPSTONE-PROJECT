@@ -2,11 +2,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import uniqueValuesReducer from "./slice/uniqueValuesSlice";
 import mergedDataReducer from "./slice/mergedDataSlice";
+import uniqueUpdateValuesReducer from "./slice/uniqueUpdateValuesSlice";
 
 const store = configureStore({
     reducer: {
         uniqueValues: uniqueValuesReducer,
-        mergedData: mergedDataReducer,// Add the unique values slice
+        mergedData: mergedDataReducer,
+        uniqueUpdateValues: uniqueUpdateValuesReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
