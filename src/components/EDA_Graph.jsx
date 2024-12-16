@@ -342,7 +342,7 @@ const EDA_Graph = () => {
                     align="center"
                     sx={{ fontWeight: "bold", marginBottom: 4 }}
                 >
-                    Exploratory Data Analysis (EDA)
+                    Visualisation from RDS 
                 </Typography>
                 <Grid container spacing={3}>
                     {graphs.map((graph, index) => (

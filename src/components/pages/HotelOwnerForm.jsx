@@ -1,22 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../layout/Layout";
 import "./HotelOwnerForm.css";
 import ownerImage from "../../assets/owner.webp";
+import CustomField from "./CustomField";
 const HotelOwnerForm = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-    });
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Sample prefilled data (can be fetched or passed as props)
+    const prefilledData = {
+        listing_id: "12345",
+        name: "Luxury Apartment",
+        available: "1",
+        price: "250",
     };
 
-    const handleSubmit = () => {
-        console.log("Form Submitted", formData);
+    const handleSubmit = (formData) => {
+        console.log("Submitted Data:", formData);
     };
 
     const handleBack = () => {
@@ -26,27 +26,10 @@ const HotelOwnerForm = () => {
     return (
         <Layout>
             <div className="form-container">
-                <img src={ownerImage} alt="Airbnb" className="airbnb-image" />
+                <img src={ownerImage} alt="Airbnb" className="airbnb-image"/>
                 <h1>You have selected Hotel Owner Form</h1>
-                <form className="form">
-                    <label>
-                        Name:
-                        <input type="text" name="name" value={formData.name} onChange={handleChange} />
-                    </label>
-                    <label>
-                        Email:
-                        <input type="email" name="email" value={formData.email} onChange={handleChange} />
-                    </label>
-                    <label>
-                        Phone:
-                        <input type="tel" name="phone" value={formData.phone} onChange={handleChange} />
-                    </label>
-                    <button type="button" onClick={handleSubmit}>
-                        Submit
-                    </button>
-                </form>
-            </div>
-            <div className="button-group">
+                <CustomField prefilledData={prefilledData} onSubmit={handleSubmit} type={"Hotel Owner"} />
+            </div><div className="button-group">
                 <button type="button" onClick={handleBack}>
                     Back
                 </button>

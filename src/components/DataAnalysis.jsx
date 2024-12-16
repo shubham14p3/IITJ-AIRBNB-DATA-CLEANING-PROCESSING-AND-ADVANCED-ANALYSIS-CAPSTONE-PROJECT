@@ -150,7 +150,7 @@ function DataAnalysis() {
           width: "100%",
         }}
       ><Typography variant="h6" align="center" sx={{ fontWeight: "bold", color: "#333", marginBottom: 3 }}>
-          Clean Data after EDA
+          Individual Data Sets after performing (Step I & Step II)
         </Typography>
         <Container
           sx={{

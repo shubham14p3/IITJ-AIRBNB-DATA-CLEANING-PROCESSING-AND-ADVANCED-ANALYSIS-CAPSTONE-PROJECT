@@ -91,7 +91,7 @@ function MergedData() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-};
+  };
 
   const renderTableHeaders = () => {
     if (!filteredData.length) return null;
@@ -144,7 +144,7 @@ function MergedData() {
     <Layout>
       <Box sx={{ paddingY: 4, paddingX: 2, width: "95%", margin: "0 auto" }}>
         <Typography variant="h6" align="center" sx={{ fontWeight: "bold", marginBottom: 3 }}>
-          Merged Data Records
+          Consilidated Dataset(Step III)
         </Typography>
 
         <TextField

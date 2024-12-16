@@ -41,7 +41,7 @@ const Selection = () => {
         <>
             <Layout>
                 <div className="selection-container">
-                    <h1 className="selection-heading">Make Your Selection</h1>
+                    <h1 className="selection-heading">Data Ingestion(Step 4)</h1>
                     <div className="cards-container">
                         {cardData.map((card) => (
                             <div key={card.id} className="card">

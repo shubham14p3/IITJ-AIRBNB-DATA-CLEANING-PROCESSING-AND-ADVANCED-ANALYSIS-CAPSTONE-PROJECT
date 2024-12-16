@@ -179,7 +179,7 @@ function FetchUniqueValue() {
             ) : (
                 <Box sx={{ paddingY: 2, paddingX: 2, width: "95%", margin: "0 auto" }}>
                     <Typography variant="h6" align="center" sx={{ fontWeight: "bold", marginBottom: 2 }}>
-                        Unique Values Selection
+                        Categorical Data Distribution
                     </Typography>
 
                     <Card sx={{ backgroundColor: "#fff", borderRadius: "8px", padding: 3, width: "100%" }}>
