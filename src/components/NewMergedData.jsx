@@ -220,7 +220,7 @@ function NewMergedData() {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate("/data-analysis")}
+            onClick={() => navigate("/selection")}
           >
             Back
           </Button>
@@ -230,7 +230,7 @@ function NewMergedData() {
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => navigate("/eda-graph")}
+            onClick={() => navigate("/prediction")}
           >
             Next
           </Button>
