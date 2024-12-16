@@ -23,7 +23,7 @@ import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import RecordCount from "./RecordCount";
 
-function MergedData() {
+function NewMergedData() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -242,4 +242,4 @@ function MergedData() {
   );
 }
 
-export default MergedData;
+export default NewMergedData;

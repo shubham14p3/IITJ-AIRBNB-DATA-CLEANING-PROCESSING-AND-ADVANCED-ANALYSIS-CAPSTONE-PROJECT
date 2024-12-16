@@ -10,7 +10,7 @@ import {
     Container,
 } from "@mui/material";
 
-const CustomField = ({ prefilledData = {}, onSubmit ,type}) => {
+const CustomField = ({ prefilledData = {}, onSubmit, type }) => {
     // Dropdown mappings for hard-coded fields
     const dropdownMappings = {
         available: {
@@ -107,8 +107,8 @@ const CustomField = ({ prefilledData = {}, onSubmit ,type}) => {
                 field === "price" || field.includes("nights")
                     ? "number"
                     : field === "date"
-                    ? "date"
-                    : "text";
+                        ? "date"
+                        : "text";
 
             return (
                 <TextField
@@ -151,6 +151,7 @@ const CustomField = ({ prefilledData = {}, onSubmit ,type}) => {
                 </form>
             </Box>
         </Container>
+        
     );
 };
 

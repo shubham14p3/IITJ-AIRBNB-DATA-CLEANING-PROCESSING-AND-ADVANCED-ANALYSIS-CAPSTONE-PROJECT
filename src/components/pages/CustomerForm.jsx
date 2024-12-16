@@ -4,6 +4,7 @@ import Layout from "../../layout/Layout";
 import "./CustomerForm.css";
 import customerImage from "../../assets/customer.webp";
 import CustomField from "./CustomField";
+import { BASE_URL } from "../Constant";
 const CustomerForm = () => {
     const navigate = useNavigate();
     const prefilledData = {
@@ -13,13 +14,33 @@ const CustomerForm = () => {
         price: "250",
     };
 
+    const handleSubmit = async (formData) => {
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+        try {
+            // Remove the "type" field before submitting
+            const { type, ...dataToSubmit } = formData;
+            // Make the POST request to the endpoint
+            const response = await fetch(`${BASE_URL}/api/append-end`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dataToSubmit),
+            });
 
-    const handleSubmit = () => {
-        console.log("Form Submitted", formData);
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Server Response:", result);
+                alert("Record appended successfully!");
+            } else {
+                const errorResult = await response.json();
+                console.error("Error Response:", errorResult);
+                alert(`Failed to append record: ${errorResult.message}`);
+            }
+        } catch (error) {
+            console.error("Error submitting data:", error);
+            alert("An error occurred while submitting the form.");
+        }
     };
 
     const handleBack = () => {
@@ -29,16 +50,19 @@ const CustomerForm = () => {
     return (
         <Layout>
             <div className="form-container">
-                <img src={customerImage} alt="Airbnb" className="airbnb-image"/>
+                <img src={customerImage} alt="Airbnb" className="airbnb-image" />
                 <h1>You have selected Customer Form</h1>
                 <CustomField prefilledData={prefilledData} onSubmit={handleSubmit} type={"Customer"} />
             </div><div className="button-group">
-                <button type="button" onClick={handleBack}>
+                <button type="button" onClick={() => navigate("/new-merged-data")}>
                     Back
                 </button>
-                <button type="button" onClick={handleSubmit}>
-                    Next
-                </button>
+                <div className="button-group">
+                    <button type="button" onClick={() => navigate("/new-merged-data")}
+                    >
+                        Next to View Saved Data
+                    </button>
+                </div>
             </div>
         </Layout>
     );
