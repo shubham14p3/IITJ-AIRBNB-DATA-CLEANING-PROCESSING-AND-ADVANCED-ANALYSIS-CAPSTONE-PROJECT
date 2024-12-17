@@ -155,7 +155,7 @@ const TrialPage = () => {
 
                         {/* Section 2 - GIF */}
                         <div style={styles.sectionTwo}>
-                            <img src="src/assets/loader.gif" alt="Loading..." style={styles.gif} />
+                            <img src="/assets/loader.gif" alt="Loading..." style={styles.gif} />
                         </div>
                     </div>
                 )}

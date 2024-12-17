@@ -28,7 +28,7 @@ const Page404 = () => {
             align-items: center;
             height: 100vh;
             text-align: center;
-            background-image: url('src/assets/dribble.gif');
+            background-image: url('/assets/dribble.gif');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
