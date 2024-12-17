@@ -24,6 +24,14 @@ This project focuses on cleaning, processing, and performing advanced analysis o
 
 [Report](assets/Capstone_v1.pdf)
 
+---
+
+## Live Project Links
+- **UI:** [http://3.222.77.245:5173/](http://3.222.77.245:5173/)
+- **Backend:** [http://44.198.64.142:5000/](http://44.198.64.142:5000/)
+
+---
+
 ## Setup Instructions
 
 ### Backend Setup
