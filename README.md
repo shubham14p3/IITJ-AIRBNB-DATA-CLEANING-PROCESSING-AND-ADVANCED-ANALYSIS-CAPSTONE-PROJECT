@@ -4,7 +4,7 @@ IITJ AIRBNB DATA CLEANING, PROCESSING AND ADVANCED ANALYSIS
 [![Contributors][contributors-shield]][contributors-url]  
 [![Forks][forks-shield]][forks-url]  
 [![Stargazers][stars-shield]][stars-url]  
-[![Issues][issues-shield]][issues-url]
+![Issues][issues-shield]
 
 ---
 
@@ -13,6 +13,16 @@ IITJ AIRBNB DATA CLEANING, PROCESSING AND ADVANCED ANALYSIS
 This project focuses on cleaning, processing, and performing advanced analysis of Airbnb data to extract meaningful insights about host behaviors, guest preferences, and market trends. It integrates advanced visualization tools and data processing pipelines for comprehensive exploration and decision-making.
 
 ---
+## Requirements
+[Requirements](assets/Requirement.pdf)
+
+## Project Report
+[Project Report](assets/TheCapstone_project_report.pdf)
+
+## Final Report & PPTx
+[Final Report](assets/TheCapstone_project_report.pdf)
+
+[Report](assets/Capstone_v1.pdf)
 
 ## Setup Instructions
 
@@ -65,32 +75,6 @@ npm install
 Start the development server:
 ```bash
 npm start
-sudo apt update
-sudo apt install -y nginx
-sudo systemctl status nginx
-npm run build
-
-
-sudo rm -rf /var/www/html/*
-sudo cp -r dist/* /var/www/html/
-
-sudo nano /etc/nginx/sites-available/default
-
-server {
-    listen 5173;
-    server_name 3.222.77.245;
-
-    root /var/www/html;
-    index index.html;
-
-    location / {
-        try_files $uri /index.html;
-    }
-}
-
-
-sudo systemctl restart nginx
-
 ```
 
 ---
@@ -138,10 +122,47 @@ project-root/
 
 ---
 
-## Sample Visualizations
+## Few Details & Screenshots
 
-### Price Distribution
-![Price Distribution](assets/Price%20Distribution.JPG)
+### Github Main Screen
+![1](assets/1.JPG)
+### Github Team Member
+![2](assets/2.JPG)
+### Jira Dashboard
+![3](assets/3.JPG)
+![3](assets/sprint_complete.JPG)
+### Jira Flow
+![4](assets/4.JPG)
+### Login Screen
+![4](assets/login.JPG)
+![4](assets/welcome.JPG)
+### AWS S3 / RDS Configuration
+![5](assets/5.JPG)
+
+![6](assets/6.JPG)
+![6](assets/elastic_ip.JPG)
+
+![7](assets/7.JPG)
+
+![8](assets/8.JPG)
+
+![9](assets/9.JPG)
+
+![10](assets/10.JPG)
+
+![11](assets/11.JPG)
+
+![12](assets/12.JPG)
+
+### UI Screen
+![74](assets/Unique_value.JPG)
+![24](assets/selection.JPG)
+![34](assets/eda.JPG)
+![44](assets/save3.JPG)
+![54](assets/clean_data.JPG)
+![64](assets/data_from_backend.JPG)
+
+## Visualisations
 
 ### Room Type Distribution
 ![Room Type Distribution](assets/Room%20Type%20Distribution.JPG)
@@ -158,7 +179,14 @@ project-root/
 ### Listings Bubble Chart
 ![Listings Bubble Chart](assets/Listings%20Bubble%20Chart.JPG)
 
+### Price Distribution
+![Listings Bubble Chart](assets/Price_Distribution.JPG)
+
+### Price vs Review Scores
+![Listings Bubble Chart](assets/Price_vs_Review_Scores.JPG)
+
 ---
+https://drive.google.com/drive/folders/1Gky54scr9xQxsmQjaLSyI1XJk8NLQoPZ
 
 ## Technologies Used
 
