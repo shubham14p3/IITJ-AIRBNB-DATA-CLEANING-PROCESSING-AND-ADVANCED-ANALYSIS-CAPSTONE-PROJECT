@@ -22,8 +22,12 @@ function Home() {
   const handleLogin = () => {
     const validCredentials = [
       { id: "g23ai2087", password: "g23ai2087" },
-      { id: "g23ai2028", password: "admin" },
+      { id: "g23ai2028", password: "g23ai2028" },
       { id: "g23ai2126", password: "g23ai2126" },
+      { id: "g23ai2094", password: "g23ai2094" },
+      { id: "g23ai2018", password: "g23ai2018" },
+      { id: "g23ai2117", password: "g23ai2117" },
+      { id: "admin", password: "admin" },
       { id: "", password: "" }, // Allow empty credentials
     ];
 

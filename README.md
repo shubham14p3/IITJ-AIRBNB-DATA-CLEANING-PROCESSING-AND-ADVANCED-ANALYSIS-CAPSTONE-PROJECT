@@ -65,6 +65,32 @@ npm install
 Start the development server:
 ```bash
 npm start
+sudo apt update
+sudo apt install -y nginx
+sudo systemctl status nginx
+npm run build
+
+
+sudo rm -rf /var/www/html/*
+sudo cp -r dist/* /var/www/html/
+
+sudo nano /etc/nginx/sites-available/default
+
+server {
+    listen 5173;
+    server_name 3.222.77.245;
+
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+}
+
+
+sudo systemctl restart nginx
+
 ```
 
 ---
