@@ -31,6 +31,14 @@ This project focuses on cleaning, processing, and performing advanced analysis o
 - **Backend:** [http://44.198.64.142:5000/](http://44.198.64.142:5000/)
 
 ---
+---
+
+## Data Sets
+- **Review:** [Datasets Review](https://www.kaggle.com/datasets/shubham14p3/iitj-airbnb-capstone-review)
+- **Listing:** [Datasets Listing](https://www.kaggle.com/datasets/shubham14p3/iitj-airbnb-capstone-listing)
+- **Calendar:** [Datasets Calendar](https://www.kaggle.com/datasets/shubham14p3/iitj-airbnb-capstone-calendar)
+
+---
 
 ## Setup Instructions
 
